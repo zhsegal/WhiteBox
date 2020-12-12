@@ -11,7 +11,6 @@ def calc_nets(train_loader, net, optimizer, criterion):
         outputs = net(train_sample[0].cuda())
         loss = criterion(outputs[0], train_sample[1].cuda())
         loss.backward()
-        optimizer.step()
 
         grad=net.grads
         outputs=net.outputs
@@ -21,3 +20,11 @@ def calc_nets(train_loader, net, optimizer, criterion):
         nets_df.append(temp_df)
 
     return nets_df
+
+## CREATE TRUE AND FALSE LABELS
+
+## LOSS
+## GRAD
+## PREDICTION
+## TRUE LABELS
+## LAYER

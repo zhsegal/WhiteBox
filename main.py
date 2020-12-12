@@ -9,12 +9,13 @@ import torch.utils.data as data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from nets import alexnet
-from white_train import white_train
+from train_cache import cache_training_set
+from training import train_loop
 
 def train():
     dataset = 'cifar100'
     checkpoint_path = './checkpoints_100cifar_alexnet_white'
-    train_batch = 100
+    train_batch = 1
     test_batch = 100
     lr = 0.05
     epochs = 500
@@ -70,11 +71,14 @@ def train():
     testset = dataloader(root='./data100', train=False, download=True, transform=transform_test)
     testloader = data.DataLoader(testset, batch_size=test_batch, shuffle=True, num_workers=0)
 
-    epoch = 0
-    test_loss, test_acc = white_train(trainloader, net, criterion, epoch, use_cuda)
+    cacheing=False
+    if cacheing:
+        cache_training_set(trainloader, net, criterion, 'true_samples.csv',10000)
+        cache_training_set(testloader, net, criterion, 'false_samples.csv',2000)
 
-    test_loss, test_acc = test(testloader, net, criterion, epoch, use_cuda)
-    print(test_acc)
+    train_loop()
+
+    # test_loss, test_acc = test(testloader, net, criterion, epoch, use_cuda)
 
     print(f'Hi')
 
