@@ -73,8 +73,8 @@ def train():
 
     cacheing=False
     if cacheing:
-        cache_training_set(trainloader, net, criterion, 'true_samples.csv',10000)
-        cache_training_set(testloader, net, criterion, 'false_samples.csv',2000)
+        cache_training_set(trainloader, net, criterion, 'true_samples',10000)
+        cache_training_set(testloader, net, criterion, 'false_samples',2000)
 
     train_loop()
 

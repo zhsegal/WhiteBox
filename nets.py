@@ -4,10 +4,10 @@ import torch.nn as nn
 import torch.nn.parallel
 
 
-class InferenceAttack_HZ(nn.Module):
+class InferenceAttack(nn.Module):
     def __init__(self, num_classes):
         self.num_classes = num_classes
-        super(InferenceAttack_HZ, self).__init__()
+        super(InferenceAttack, self).__init__()
         self.grads_conv = nn.Sequential(
             nn.Dropout(p=0.2),
             nn.Conv2d(1, 1000, kernel_size=(1, 100), stride=1),
@@ -25,7 +25,9 @@ class InferenceAttack_HZ(nn.Module):
             nn.Linear(512, 128),
             nn.ReLU(),
         )
-        self.labels = nn.Sequential(
+        self.loss = nn.Sequential(
+            nn.Linear(1, num_classes),
+            nn.ReLU(),
             nn.Linear(num_classes, 128),
             nn.ReLU(),
             nn.Linear(128, 64),
@@ -64,12 +66,11 @@ class InferenceAttack_HZ(nn.Module):
                 self.state_dict()[key][...] = 0
         self.output = nn.Sigmoid()
 
-    def forward(self, g, l, c, o):
-        # out_g = self.grads_conv(g).view([g.size()[0],-1])
-        out_g = self.grads_linear(g.view([g.size()[0], -1]))
-        out_l = self.labels(l)
-        out_c = self.correct(c)
-        out_o = self.preds(o)
+    def forward(self, grad, loss, pred, label):
+        out_g = self.grads_linear(grad.view([grad.size()[0], -1]))
+        out_l = self.loss(loss)
+        out_c = self.correct(label)
+        out_o = self.preds(pred)
 
         is_member = self.combine(torch.cat((out_g, out_c, out_l, out_o), 1))
 

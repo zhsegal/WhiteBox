@@ -5,26 +5,25 @@ import os
 
 class SampleLoader(Dataset):
 
-    def __init__(self, csv_file):
-        self.csv_file=csv_file
+    def __init__(self, file_name):
+        self.pt_file=file_name
 
     def __len__(self):
-        return len(self.landmarks_frame)
+        return len(self.pt_file)
 
     def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
 
-        csv_path = self.csv_file
-        df=pd.read_csv(csv_path)
-        sample_line = df.iloc[idx]
 
-        id_num=sample_line['id']
-        grad=sample_line['grad']
-        weights=sample_line['weights']
-        loss=sample_line['loss']
-        prediction=sample_line['prediction']
-        true_label=sample_line['true_label']
+        torch_file = self.pt_file
+        df=torch.load(torch_file)
+        sample_line = df[idx]
+
+        id_num=sample_line[0]
+        grad=sample_line[4]
+        weights=sample_line[5]
+        loss=sample_line[1]
+        prediction=sample_line[3]
+        true_label=sample_line[2]
 
 
         sample = {'id': id_num, 'grad': grad,'weights': weights,'loss': loss, 'prediction': prediction,'true_label': true_label}

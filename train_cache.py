@@ -1,9 +1,10 @@
 from torch import optim
 import pandas as pd
+import torch
 
 def cache_training_set(trainloader, net, criterion,file_name,nsamples):
     optimizer = optim.Adam(net.parameters(),lr=0.0001)
-    dataset=pd.DataFrame(columns=['id','grad','weights','loss','prediction','true_label'])
+    data=[]
     for (i, inputs) in enumerate(trainloader):
 
             ## ALEX TRAIN###
@@ -24,11 +25,11 @@ def cache_training_set(trainloader, net, criterion,file_name,nsamples):
         prediction=outputs
         grad=grads[-2]
         weights=net.state_dict()['features.10.weight']
-        dataset.loc[i]=[id,grad,weights,loss_sample,prediction,true_labes]
+        sample=[id,loss_sample,true_labes,prediction,grad,weights]
+        data.append(sample)
         if i > nsamples:
             break
-
-    dataset.to_csv(f'cache/{file_name}')
+    torch.save(data, f'cache/{file_name}.pt')
     print ('done')
     pass
 
